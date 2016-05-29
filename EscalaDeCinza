@@ -1,0 +1,24 @@
+private void escalaDeCinza(String nome){
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+		Mat ori = new Mat();
+		ori = Imgcodecs.imread(nome);
+		int w = ori.width();
+        int h = ori.height();
+        
+		/*********************************************************/
+		/*** Escala de cinza *************************************/
+        Mat gray = ori;
+        for (int x = 0; x <h; x++) {
+            for (int y = 0; y <w; y++) {
+                double[] test = gray.get(x, y);
+            	//System.out.println(test[0] + " " + test[1] + " " + test[2] );
+                double c1 = (test[0] + test[1] + test[2]) / 3;
+                double[] cinza = {c1,c1,c1};
+                gray.put(x, y, cinza);
+            }
+        }
+		Imgcodecs.imwrite(nome.substring(0, nome.lastIndexOf(".")) + "_EscalaDeCinza" 
+		        + nome.substring(nome.lastIndexOf("."), nome.length()), gray);
+		System.out.println("Imagem gerada: " + nome.substring(0, nome.lastIndexOf(".")) + "_EscalaDeCinza" 
+		        + nome.substring(nome.lastIndexOf("."), nome.length()));
+	}
