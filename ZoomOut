@@ -1,0 +1,32 @@
+	private void ZoomOut(String nome){
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+		Mat ori = new Mat();
+		ori = Imgcodecs.imread("Su-47.jpg");
+		int w = ori.width();
+        int h = ori.height();
+		
+        /*********************************************************/
+		/*** zomm out ********************************************/
+        Mat zoutlinear = new Mat(ori.rows() /2, ori.cols()/2, ori.type());
+        Mat zoutquadrado = new Mat(ori.rows() /2, ori.cols()/2, ori.type());
+        for (int x = 0; x <h; x++) {
+            for (int y = 0; y <w; y++) {
+            	if(x%2==0 && y%2==0){ 
+            		double[] p0 = ori.get(x, y);
+            		double[] p1 = ori.get(x, y+1);
+            		double[] p2 = ori.get(x+1, y);
+            		double[] p3 = ori.get(x+1, y+1);
+            		double[] res = {(p0[0]+p1[0]+p2[0]+p3[0])/4,
+            						(p0[1]+p1[1]+p2[1]+p3[1])/4,
+            						(p0[2]+p1[2]+p2[2]+p3[2])/4};
+            		zoutlinear.put(x/2,y/2, res);
+            		zoutquadrado.put(x/2,y/2, ori.get(x, y));
+            	}
+            }
+        }
+        Imgcodecs.imwrite(nome.substring(0, nome.lastIndexOf(".")) + "_zoomOutLinear" 
+		        + nome.substring(nome.lastIndexOf("."), nome.length()), zoutlinear);
+        Imgcodecs.imwrite(nome.substring(0, nome.lastIndexOf(".")) + "_zoomOutQuadrado" 
+		        + nome.substring(nome.lastIndexOf("."), nome.length()), zoutquadrado);
+        /*********************************************************/
+	}
