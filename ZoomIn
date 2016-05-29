@@ -1,0 +1,66 @@
+private void ZoomIn(String nome){
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+		Mat ori = new Mat();
+		ori = Imgcodecs.imread(nome);
+		int w = ori.width();
+        int h = ori.height();
+		/*********************************************************/
+		/*** zomm in *********************************************/
+        Mat zinlinear = new Mat(ori.rows() * 2, ori.cols()* 2, ori.type());
+        Mat zinquadrado = new Mat(ori.rows() * 2, ori.cols()* 2, ori.type());
+        for (int x = 0; x <h; x++) {
+            for (int y = 0; y <w; y++) {
+            	if(x ==0 && y == 0){
+                zinlinear.put(x, y, ori.get(x, y));
+                zinquadrado.put(x, y, ori.get(x, y));
+            	zinquadrado.put(x+1, y+1, ori.get(x, y));
+            	zinquadrado.put(x, y+1, ori.get(x, y));
+            	zinquadrado.put(x+1, y, ori.get(x, y));
+            	}
+            	else{
+            	zinlinear.put(x*2, y*2, ori.get(x, y));
+            	zinquadrado.put(x*2, y*2, ori.get(x, y));
+            	zinquadrado.put(x*2+1, y*2+1, ori.get(x, y));
+            	zinquadrado.put(x*2, y*2+1, ori.get(x, y));
+            	zinquadrado.put(x*2+1, y*2, ori.get(x, y));
+            	}
+            }
+        }
+        Imgcodecs.imwrite(nome.substring(0, nome.lastIndexOf(".")) + "_zoomInQuadrado" 
+		        + nome.substring(nome.lastIndexOf("."), nome.length()), zinquadrado);
+        System.out.println("Imagem gerada: " + nome.substring(0, nome.lastIndexOf(".")) + "_zoomInQuadrado" 
+		        + nome.substring(nome.lastIndexOf("."), nome.length()));
+        
+        for (int x = 0; x <h*2; x++) {
+            for (int y = 0; y <w*2; y++) {
+            	if(x%2==0 && y == w*2 - 1) zinlinear.put(x,y,zinlinear.get(x, y-1));
+            	else if(x%2==0 && y%2 != 0){
+            		double[] p0 = zinlinear.get(x, y-1);
+            		double[] p1 = zinlinear.get(x, y+1);
+            		double[] res = {(p0[0]+p1[0])/2,
+            						(p0[1]+p1[1])/2,
+            						(p0[2]+p1[2])/2};
+            		zinlinear.put(x,y,res);
+                	
+            	}
+            }
+        }
+        for (int x = 0; x <h*2; x++) {
+            for (int y = 0; y <w*2; y++) {
+            	if(x == h*2 -1) zinlinear.put(x,y,zinlinear.get(x-1, y));
+            	else if(x%2!=0){ 
+            		double[] p0 = zinlinear.get(x-1, y);
+            		double[] p1 = zinlinear.get(x+1, y);
+            		
+            		double[] res = {(p0[0]+p1[0])/2,
+            						(p0[1]+p1[1])/2,
+            						(p0[2]+p1[2])/2};
+            		zinlinear.put(x,y,res);
+            	}
+            }
+        }
+        Imgcodecs.imwrite(nome.substring(0, nome.lastIndexOf(".")) + "_zoomInLinear" 
+		        + nome.substring(nome.lastIndexOf("."), nome.length()), zinlinear);
+        System.out.println("Imagem gerada: " + nome.substring(0, nome.lastIndexOf(".")) + "_zoomInLinear" 
+		        + nome.substring(nome.lastIndexOf("."), nome.length()));
+	}
